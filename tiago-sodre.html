@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parmeca × Tiago Sodré</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bordo: #6B1E2E; --bordo-light: #8B2E42; --bege: #F5F0E8; --bege-dark: #E8DFD0;
+    --bege-border: #D4C8B4; --text-dark: #2C1A20; --text-mid: #6B4A52; --text-light: #9B7A84;
+    --white: #ffffff; --gold: #C4963A;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Jost', sans-serif; background: var(--bege); color: var(--text-dark); }
+  .header { background: var(--bordo); padding: 2rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid var(--gold); flex-wrap: wrap; gap: 12px; }
+  .header-brand { display: flex; align-items: center; gap: 16px; }
+  .header-logo { height: 48px; width: auto; background: var(--bege); border-radius: 8px; padding: 4px 8px; }
+  .header-x { color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: 28px; }
+  .header-collab { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; color: #fff; letter-spacing: 0.04em; }
+  .header-sub { font-size: 11px; color: rgba(255,255,255,0.6); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 2px; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .status-select { font-size: 13px; font-family: 'Cormorant Garamond', serif; background: rgba(196,150,58,0.15); border: 1px solid var(--gold); border-radius: 8px; padding: 8px 14px; color: #fff; cursor: pointer; outline: none; }
+  .save-btn { background: var(--gold); color: var(--bordo); border: none; border-radius: 8px; padding: 8px 18px; font-size: 13px; font-family: 'Jost', sans-serif; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+  .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .status-bar { display: flex; align-items: center; gap: 8px; padding: 8px 2rem; font-size: 12px; font-family: 'Jost', sans-serif; color: var(--text-light); background: var(--white); border-bottom: 1px solid var(--bege-border); }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #ccc; flex-shrink: 0; }
+  .status-dot.online { background: #27ae60; }
+  .status-dot.loading { background: #f39c12; animation: pulse 1s infinite; }
+  .status-dot.error { background: #e74c3c; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .main { max-width: 960px; margin: 0 auto; padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; }
+  .card { background: var(--white); border: 1px solid var(--bege-border); border-radius: 14px; overflow: hidden; }
+  .card-header { background: var(--bege); border-bottom: 1px solid var(--bege-border); padding: 1rem 1.5rem; display: flex; align-items: center; gap: 10px; }
+  .card-icon { font-size: 18px; }
+  .card-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 700; color: var(--bordo); }
+  .card-body { padding: 1.5rem; }
+  .field-group { margin-bottom: 1.2rem; }
+  .field-group:last-child { margin-bottom: 0; }
+  .field-label { font-size: 10px; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; display: block; font-family: 'Jost', sans-serif; font-weight: 500; }
+  .field-value { font-size: 14px; color: var(--text-dark); font-family: 'Jost', sans-serif; background: var(--bege); border: 1px solid var(--bege-border); border-radius: 8px; padding: 10px 14px; width: 100%; outline: none; transition: border-color 0.15s; resize: vertical; }
+  .field-value:focus { border-color: var(--bordo); background: #fff; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .image-upload-area { border: 2px dashed var(--bege-border); border-radius: 10px; padding: 1.5rem; text-align: center; cursor: pointer; transition: border-color 0.15s; position: relative; overflow: hidden; min-height: 130px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 6px; }
+  .image-upload-area:hover { border-color: var(--bordo); background: var(--bege); }
+  .image-upload-area.has-image { border-style: solid; padding: 0; cursor: default; }
+  .image-upload-area img { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; display: block; }
+  .upload-icon { font-size: 22px; }
+  .upload-text { font-size: 11px; color: var(--text-light); font-family: 'Jost', sans-serif; }
+  .image-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .image-upload-area.has-image .image-input { display: none; }
+  .img-controls { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(44,26,32,0.75); padding: 6px 8px; display: flex; align-items: center; gap: 8px; z-index: 2; }
+  .img-slider { flex: 1; height: 4px; cursor: pointer; accent-color: var(--gold); }
+  .img-change-btn { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3); border-radius: 5px; padding: 3px 8px; font-size: 11px; cursor: pointer; font-family: 'Jost', sans-serif; white-space: nowrap; }
+  .img-change-btn:hover { background: rgba(255,255,255,0.3); }
+  .image-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .image-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .timeline { display: flex; flex-direction: column; }
+  .timeline-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--bege-border); align-items: center; }
+  .timeline-item:last-child { border-bottom: none; }
+  .tl-input { font-size: 12px; font-family: 'Jost', sans-serif; background: var(--bege); border: 1px solid var(--bege-border); border-radius: 6px; padding: 6px 8px; outline: none; color: var(--text-dark); }
+  .tl-input:focus { border-color: var(--bordo); }
+  .tl-date { width: 130px; }
+  .tl-tipo { width: 130px; cursor: pointer; }
+  .tl-desc { flex: 1; }
+  .timeline-del { background: none; border: none; cursor: pointer; color: var(--text-light); font-size: 18px; padding: 2px 6px; border-radius: 5px; flex-shrink: 0; }
+  .timeline-del:hover { color: #c0392b; }
+  .timeline-header { display: flex; gap: 10px; padding-bottom: 8px; border-bottom: 2px solid var(--bege-border); margin-bottom: 2px; }
+  .th { font-size: 10px; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.08em; font-family: 'Jost', sans-serif; }
+  .meta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 1.2rem; }
+  .meta-card { background: var(--bege); border: 1px solid var(--bege-border); border-radius: 10px; padding: 1rem; text-align: center; }
+  .meta-num { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; color: var(--bordo); background: none; border: none; width: 100%; text-align: center; outline: none; padding: 4px; }
+  .meta-num:focus { background: var(--white); border: 1px solid var(--bordo); border-radius: 6px; }
+  .btn-add { background: none; border: 1px dashed var(--bege-border); border-radius: 8px; padding: 7px 14px; font-size: 12px; cursor: pointer; color: var(--text-mid); font-family: 'Jost', sans-serif; transition: all 0.15s; display: flex; align-items: center; gap: 6px; margin-top: 10px; }
+  .btn-add:hover { border-color: var(--bordo); color: var(--bordo); background: var(--bege); }
+  .footer { background: var(--bordo); padding: 1.2rem 2rem; text-align: center; margin-top: 1rem; }
+  .footer-text { font-size: 11px; color: rgba(255,255,255,0.4); font-family: 'Jost', sans-serif; letter-spacing: 0.08em; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-brand">
+    <img class="header-logo" src="logo.png" alt="Parmeca" onerror="this.style.display='none'" />
+    <div class="header-x">×</div>
+    <div>
+      <div class="header-collab">Tiago Sodré</div>
+      <div class="header-sub">Prato exclusivo — Collab</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <select class="status-select" id="f-status">
+      <option>🟡 Em planejamento</option>
+      <option>🔵 Em breve</option>
+      <option>🟢 Ativo</option>
+      <option>⚫ Encerrado</option>
+    </select>
+    <button class="save-btn" id="save-btn" onclick="saveAll()">💾 Salvar tudo</button>
+  </div>
+</div>
+
+<div class="status-bar">
+  <div class="status-dot loading" id="status-dot"></div>
+  <span id="status-text">Conectando...</span>
+</div>
+
+<div class="main">
+  <div class="card">
+    <div class="card-header"><span class="card-icon">🍽️</span><span class="card-title">O Prato</span></div>
+    <div class="card-body">
+      <div class="field-row" style="margin-bottom:1.2rem">
+        <div class="field-group" style="margin:0"><label class="field-label">Nome do prato</label><input class="field-value" id="f-prato-nome" placeholder="ex: Parmegiana do Tiago" /></div>
+        <div class="field-group" style="margin:0"><label class="field-label">Categoria no cardápio</label><input class="field-value" id="f-prato-categoria" placeholder="ex: Pratos Especiais" /></div>
+      </div>
+      <div class="field-group"><label class="field-label">Descrição do prato</label><textarea class="field-value" id="f-prato-descricao" rows="3" placeholder="Como o prato será descrito no cardápio..."></textarea></div>
+      <div class="field-row">
+        <div class="field-group" style="margin:0"><label class="field-label">Preço</label><input class="field-value" id="f-prato-preco" placeholder="ex: R$ 49,90" /></div>
+        <div class="field-group" style="margin:0"><label class="field-label">Serve quantas pessoas</label><input class="field-value" id="f-prato-porcao" placeholder="ex: 1 pessoa" /></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-icon">📋</span><span class="card-title">Cardápio — Olga</span></div>
+    <div class="card-body">
+      <div class="field-group"><label class="field-label">Posição no cardápio físico</label><input class="field-value" id="f-olga-posicao" placeholder="ex: Seção de Especiais, página 3" /></div>
+      <div class="field-group" style="margin:0"><label class="field-label">Imagens</label>
+        <div class="image-grid">
+          <div class="image-upload-area" id="olga-img-1"><input type="file" accept="image/*" class="image-input" onchange="previewImage(this,'olga-img-1')" /><div class="upload-icon">📷</div><div class="upload-text">Foto do cardápio</div></div>
+          <div class="image-upload-area" id="olga-img-2"><input type="file" accept="image/*" class="image-input" onchange="previewImage(this,'olga-img-2')" /><div class="upload-icon">📷</div><div class="upload-text">Detalhe do prato</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-icon">📱</span><span class="card-title">Cardápio — iFood</span></div>
+    <div class="card-body">
+      <div class="field-row" style="margin-bottom:1.2rem">
+        <div class="field-group" style="margin:0"><label class="field-label">Nome no app</label><input class="field-value" id="f-ifood-nome" placeholder="ex: Parmegiana do Tiago Sodré" /></div>
+        <div class="field-group" style="margin:0"><label class="field-label">Categoria no iFood</label><input class="field-value" id="f-ifood-categoria" placeholder="ex: Especiais do Chef" /></div>
+      </div>
+      <div class="field-group" style="margin-bottom:1.2rem"><label class="field-label">Descrição no app</label><textarea class="field-value" id="f-ifood-descricao" rows="2" placeholder="Descrição que aparecerá no iFood..."></textarea></div>
+      <div class="field-group" style="margin:0"><label class="field-label">Imagens no iFood</label>
+        <div class="image-grid-3">
+          <div class="image-upload-area" id="ifood-img-1"><input type="file" accept="image/*" class="image-input" onchange="previewImage(this,'ifood-img-1')" /><div class="upload-icon">📷</div><div class="upload-text">Foto principal</div></div>
+          <div class="image-upload-area" id="ifood-img-2"><input type="file" accept="image/*" class="image-input" onchange="previewImage(this,'ifood-img-2')" /><div class="upload-icon">📷</div><div class="upload-text">Foto secundária</div></div>
+          <div class="image-upload-area" id="ifood-img-3"><input type="file" accept="image/*" class="image-input" onchange="previewImage(this,'ifood-img-3')" /><div class="upload-icon">📷</div><div class="upload-text">Screenshot app</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-icon">🖼️</span><span class="card-title">Banners e Comunicação Visual</span></div>
+    <div class="card-body">
+      <div class="field-group" style="margin-bottom:1.2rem"><label class="field-label">Canais de veiculação</label><input class="field-value" id="f-banner-canais" placeholder="ex: Instagram, Stories, iFood Banner, WhatsApp" /></div>
+      <div class="field-group" style="margin:0"><label class="field-label">Banners</label>
+        <div class="image-grid" id="banners-grid">
+          <div class="image-upload-area" id="banner-img-1"><input type="file" accept="image/*" class="image-input" onchange="previewImage(this,'banner-img-1')" /><div class="upload-icon">🖼️</div><div class="upload-text">Banner feed</div></div>
+          <div class="image-upload-area" id="banner-img-2"><input type="file" accept="image/*" class="image-input" onchange="previewImage(this,'banner-img-2')" /><div class="upload-icon">🖼️</div><div class="upload-text">Banner stories</div></div>
+        </div>
+        <button class="btn-add" onclick="addBannerSlot()">+ Adicionar banner</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-icon">📅</span><span class="card-title">Período Ativo</span></div>
+    <div class="card-body">
+      <div class="field-row" style="margin-bottom:1.2rem">
+        <div class="field-group" style="margin:0"><label class="field-label">Data de início</label><input class="field-value" id="f-periodo-inicio" type="date" /></div>
+        <div class="field-group" style="margin:0"><label class="field-label">Data de encerramento</label><input class="field-value" id="f-periodo-fim" type="date" /></div>
+      </div>
+      <div class="field-group" style="margin:0"><label class="field-label">Observações</label><input class="field-value" id="f-periodo-obs" placeholder="ex: Disponível apenas nas unidades Olga e iFood" /></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-icon">📊</span><span class="card-title">Expectativa de Vendas</span></div>
+    <div class="card-body">
+      <div class="meta-grid">
+        <div class="meta-card"><div class="field-label">Meta de unidades</div><input class="meta-num" id="f-meta-unidades" placeholder="—" /><div style="font-size:10px;color:var(--text-light);margin-top:4px">unidades/mês</div></div>
+        <div class="meta-card"><div class="field-label">Receita esperada</div><input class="meta-num" id="f-meta-receita" placeholder="—" /><div style="font-size:10px;color:var(--text-light);margin-top:4px">R$ / mês</div></div>
+        <div class="meta-card"><div class="field-label">Ticket médio</div><input class="meta-num" id="f-meta-ticket" placeholder="—" /><div style="font-size:10px;color:var(--text-light);margin-top:4px">R$ por pedido</div></div>
+      </div>
+      <div class="field-group" style="margin:0"><label class="field-label">Observações</label><textarea class="field-value" id="f-meta-obs" rows="2" placeholder="Contexto, sazonalidade, comparativos..."></textarea></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-icon">🎬</span><span class="card-title">Cronograma de Conteúdo</span></div>
+    <div class="card-body">
+      <div class="timeline-header">
+        <span class="th" style="width:130px">Data</span>
+        <span class="th" style="width:130px">Tipo</span>
+        <span class="th" style="flex:1">Descrição</span>
+      </div>
+      <div class="timeline" id="timeline"></div>
+      <button class="btn-add" onclick="addTimelineItem()">+ Adicionar item</button>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="footer-text">PARMECA CUCINA ITALIANA — DOCUMENTO INTERNO — COLLAB TIAGO SODRÉ</div>
+</div>
+
+<script>
+var SUPABASE_URL = 'https://jlujwzvpjxdnzulndecs.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_nc7suAevy680DnEOAIDqKw_IcAD3nTp';
+var TABLE = 'tiago_sodre';
+var bannerCount = 2;
+var tlCount = 0;
+var TIPO_OPTS = ['Post feed','Stories','Reels','TikTok','YouTube','Live','Lançamento','Encerramento','Outro'];
+var FIELDS = ['status','prato-nome','prato-categoria','prato-descricao','prato-preco','prato-porcao','olga-posicao','ifood-nome','ifood-categoria','ifood-descricao','banner-canais','periodo-inicio','periodo-fim','periodo-obs','meta-unidades','meta-receita','meta-ticket','meta-obs'];
+
+function setStatus(state, msg) {
+  document.getElementById('status-dot').className = 'status-dot '+state;
+  document.getElementById('status-text').textContent = msg;
+}
+
+async function sbFetch(method, path, body) {
+  var opts = { method: method, headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer '+SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' } };
+  if (body) opts.body = JSON.stringify(body);
+  var res = await fetch(SUPABASE_URL+'/rest/v1/'+path, opts);
+  if (!res.ok) { var e = await res.text(); throw new Error(e); }
+  if (res.status===204) return null;
+  return res.json();
+}
+
+async function loadData() {
+  setStatus('loading','Carregando dados...');
+  try {
+    var data = await sbFetch('GET', TABLE+'?order=campo.asc');
+    if (data && data.length > 0) {
+      data.forEach(function(row) {
+        if (!row.campo.startsWith('tl-')) {
+          var el = document.getElementById('f-'+row.campo);
+          if (el) el.value = row.valor||'';
+        }
+      });
+      var tls = data.filter(function(r){ return r.campo.startsWith('tl-'); });
+      tls.forEach(function(r){ try { addTimelineItem(JSON.parse(r.valor)); } catch(e){ addTimelineItem(); } });
+      if (!tls.length) { addTimelineItem(); addTimelineItem(); addTimelineItem(); }
+    } else {
+      addTimelineItem(); addTimelineItem(); addTimelineItem();
+    }
+    setStatus('online','Conectado — dados carregados');
+  } catch(e) {
+    setStatus('error','Erro ao conectar: '+e.message);
+    addTimelineItem(); addTimelineItem(); addTimelineItem();
+  }
+}
+
+async function saveAll() {
+  var btn = document.getElementById('save-btn');
+  btn.disabled=true; btn.textContent='💾 Salvando...';
+  setStatus('loading','Salvando...');
+  try {
+    await sbFetch('DELETE', TABLE+'?id=gt.0');
+    var rows = [];
+    FIELDS.forEach(function(f){ var el=document.getElementById('f-'+f); if(el) rows.push({campo:f,valor:el.value||''}); });
+    document.querySelectorAll('.timeline-item').forEach(function(item,i){
+      rows.push({campo:'tl-'+i,valor:JSON.stringify({date:item.querySelector('.tl-date').value,tipo:item.querySelector('.tl-tipo').value,desc:item.querySelector('.tl-desc').value})});
+    });
+    for(var i=0;i<rows.length;i++) await sbFetch('POST',TABLE,rows[i]);
+    setStatus('online','Salvo — '+new Date().toLocaleTimeString('pt-BR'));
+  } catch(e){ setStatus('error','Erro: '+e.message); }
+  btn.disabled=false; btn.textContent='💾 Salvar tudo';
+}
+
+function previewImage(input,cid) {
+  var c=document.getElementById(cid);
+  if(input.files&&input.files[0]){ var r=new FileReader(); r.onload=function(e){
+    c.classList.add('has-image');
+    c.innerHTML=
+      '<div id="img-wrap-'+cid+'" style="overflow:hidden;height:200px;width:100%;border-radius:8px;position:relative;background:#000;">'+
+        '<img src="'+e.target.result+'" id="img-'+cid+'" style="width:100%;height:100%;object-fit:contain;position:absolute;top:0;left:0;transform-origin:center center;" />'+
+      '</div>'+
+      '<div class="img-controls">'+
+        '<span style="color:#fff;font-size:10px;white-space:nowrap">🔲</span>'+
+        '<input type="range" class="img-slider" min="30" max="200" value="100" title="Zoom" oninput="resizeImg(\''+cid+'\',this.value)" />'+
+        '<span style="color:#fff;font-size:10px;white-space:nowrap">↕</span>'+
+        '<input type="range" class="img-slider" min="-200" max="200" value="0" title="Posição vertical" oninput="repositionImg(\''+cid+'\',this.value)" />'+
+        '<button class="img-change-btn" onclick="triggerUpload(\''+cid+'\')">✏️ Trocar</button>'+
+        '<input type="file" accept="image/*" class="image-input" id="input-'+cid+'" onchange="previewImage(this,\''+cid+'\')" style="display:none" />'+
+      '</div>';
+  }; r.readAsDataURL(input.files[0]); }
+}
+function resizeImg(cid, val) {
+  var img = document.getElementById('img-'+cid);
+  if(img) img.style.transform = 'scale('+val/100+') translateY('+(img.dataset.ty||0)+'px)';
+  if(img) img.dataset.scale = val;
+}
+function repositionImg(cid, val) {
+  var img = document.getElementById('img-'+cid);
+  if(img) { img.dataset.ty = val; var scale = img.dataset.scale||100; img.style.transform = 'scale('+scale/100+') translateY('+val+'px)'; }
+}
+function triggerUpload(cid) {
+  var input = document.getElementById('input-'+cid);
+  if(input) input.click();
+}
+
+function addBannerSlot() {
+  bannerCount++;
+  var id='banner-img-'+bannerCount, grid=document.getElementById('banners-grid'), div=document.createElement('div');
+  div.className='image-upload-area'; div.id=id;
+  div.innerHTML='<input type="file" accept="image/*" class="image-input" onchange="previewImage(this,\''+id+'\')" /><div class="upload-icon">🖼️</div><div class="upload-text">Banner</div>';
+  grid.appendChild(div);
+}
+
+function addTimelineItem(data) {
+  tlCount++;
+  var id='tl-'+tlCount, c=document.getElementById('timeline'), item=document.createElement('div');
+  item.className='timeline-item'; item.id=id;
+  var opts=TIPO_OPTS.map(function(t){ return '<option'+(data&&data.tipo===t?' selected':'')+'>'+t+'</option>'; }).join('');
+  item.innerHTML='<input class="tl-input tl-date" type="date" value="'+(data&&data.date?data.date:'')+'" /><select class="tl-input tl-tipo">'+opts+'</select><input class="tl-input tl-desc" type="text" placeholder="Descreva o conteúdo..." value="'+(data&&data.desc?data.desc:'')+'" /><button class="timeline-del" onclick="document.getElementById(\''+id+'\').remove()" title="Remover">×</button>';
+  c.appendChild(item);
+}
+
+loadData();
+</script>
+</body>
+</html>
